@@ -1,0 +1,29 @@
+-- Creating the Database and Schemas.
+-- This script focuses on building the database: DWH and three schemas for: Bronze , Silver and Gold Layers
+
+-- Firstly I check whether the database already exists , if yes: It's gonna be dropped and recreated , if No: it's gonna be created.
+-- Warning: Running this script means dropping 'DWH' database (if exists) including all data , tables and schemas it might have.
+
+use master;
+go
+
+if exists (select 1 from sys.databases where name = 'DWH')
+begin
+alter database DWH set single_user with rollback immediate 
+drop database DWH
+end;
+go
+
+create database DWH;
+go
+
+use DWH;
+go
+
+create schema bronze;
+go
+
+create schema silver;
+go
+
+create schema gold;
