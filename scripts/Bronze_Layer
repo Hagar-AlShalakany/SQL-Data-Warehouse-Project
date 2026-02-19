@@ -1,0 +1,70 @@
+
+-- inserting the data into created tables:
+-- Making sure the table is empty before inserting data to avoid duplication:
+
+create or alter procedure bronze.load_bronze as
+begin
+	print 'This query loads the bronze layer data from two sources: ERP and CRM'
+	-- Getting the execution duration for data insertion:
+	declare @start_Time datetime , @end_time datetime
+	set @start_Time = GETDATE();
+	truncate table bronze_crm_cust_info;
+	bulk insert bronze_crm_cust_info
+	from 'C:\Users\SQL DataWarehouse Project\sql-data-warehouse-project\datasets\source_crm\cust_info.csv'
+	with (
+	first_row = 2 ,
+	fieldterminator = ',',
+	tablock);
+	
+	--select count(*) from bronze_crm_cust_info;
+
+	truncate table bronze_crm_prd_info; 
+	bulk insert bronze_crm_prd_info
+	from 'C:\Users\SQL DataWarehouse Project\sql-data-warehouse-project\datasets\source_crm\prd_info.csv'
+	with (first_row = 2 ,
+	fieldterminator = ',',
+	tablock);
+
+	truncate table bronze_crm_sales_details
+	bulk insert bronze_crm_sales_details
+	from 'C:\Users\SQL DataWarehouse Project\sql-data-warehouse-project\datasets\source_crm\sales_details.csv'
+	with (first_row = 2,
+	fieldterminator = ',',
+	tablock)
+
+
+	truncate table bronze_erp_cust_az12
+	bulk insert bronze_erp_cust_az12
+	from 'C:\Users\SQL DataWarehouse Project\sql-data-warehouse-project\datasets\source_erp\cust_az12.csv'
+	with (first_row = 2,
+	fieldterminator = ',',
+	tablock)
+
+
+	truncate table bronze_erp_loc_a101
+	bulk insert bronze_erp_loc_a101
+	from 'C:\Users\SQL DataWarehouse Project\sql-data-warehouse-project\datasets\source_erp\loc_a101.csv'
+	with (first_row = 2,
+	fieldterminator = ',',
+	tablock)
+
+
+
+	truncate table bronze_erp_PX_CAT_G1V2
+	bulk insert bronze_erp_PX_CAT_G1V2
+	from 'C:\Users\SQL DataWarehouse Project\sql-data-warehouse-project\datasets\source_erp\PX_CAT_G1V2.csv'
+	with (first_row = 2,
+	fieldterminator = ',',
+	tablock)
+	set @end_time = GETDATE();
+	print 'Load Duration in seconds: '+ cast(datediff(second,@start_time, @end_time) as nvarchar)
+end
+
+select * from bronze_crm_cust_info;
+select * from bronze_crm_prd_info;
+select * from bronze_crm_sales_details;
+select * from bronze_erp_cust_az12;
+select * from bronze_erp_loc_a101;
+select * from bronze_erp_PX_CAT_G1V2;
+
+exec bronze.load_bronze;
